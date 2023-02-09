@@ -246,21 +246,25 @@ public:
         
         // partie 1: modifs ici ...
         // ...
-        glStencilOp( GL_ZERO, GL_KEEP, GL_KEEP );
-        glStencilFunc( GL_EQUAL, 1, 0xFF );
+        glEnable(GL_STENCIL_TEST);
+        glStencilOp( GL_REPLACE, GL_REPLACE, GL_REPLACE );
+        glStencilFunc( GL_EQUAL, 1, 1 );
         afficherParoiZpos(); // paroi en +Z
 
-        //glStencilFunc( GLenum func, GLint ref, GLuint mask );
-        //afficherParoiXpos(); // paroi en +X
+        glStencilFunc(GL_EQUAL, 1, 1);
+        afficherParoiXpos(); // paroi en +X
 
-        //glStencilFunc( GLenum func, GLint ref, GLuint mask );
-        //afficherParoiZneg(); // paroi en -Z
+        glStencilFunc(GL_EQUAL, 1, 1);
+        afficherParoiZneg(); // paroi en -Z
 
-        //glStencilFunc( GLenum func, GLint ref, GLuint mask );
-        //afficherParoiXneg(); // paroi en -X
+        glStencilFunc( GL_EQUAL, 1, 1 );
+        afficherParoiXneg(); // paroi en -X
 
-        // void glStencilFunc( GLenum func, GLint ref, GLuint mask );
-        //afficherParoiYneg(); // paroi en -Y
+        glStencilFunc( GL_EQUAL, 1, 1 );
+        afficherParoiYneg(); // paroi en -Y
+
+        glStencilFunc(GL_EQUAL, 1, 1);
+        afficherParoiYpos(); // paroi en +Y
 
         glDisable(GL_CULL_FACE);
 
@@ -276,22 +280,24 @@ public:
         glUniform1i(locillumination, Etat::illumination);
         glUniform1i(locmonochromacite, Etat::monochromacite);
 
-        //glStencilOp( GLenum sfail, GLenum zfail, GLenum pass );
+        glStencilOp( GL_KEEP, GL_REPLACE, GL_REPLACE);
 
         // partie 1: modifs ici ...
         // [ au besoin, utiliser : if ( Etat::debug ) glStencilFunc( GL_ALWAYS, 1, 1 ); // pour débogguer ]
         // on trace le contenu de chaque lentille 5 fois
-        //glStencilFunc( GLenum func, GLint ref, GLuint mask );
+        //glStencilFunc(GL_EQUAL, 1, 1);
+       
         // ...
         //glStencilFunc( GLenum func, GLint ref, GLuint mask );
         // ...
         // etc.
+        afficherContenu();
         glUseProgram(progBase);
         // afficher les parois du trou de ver
         afficherParois();
         // lorsqu'on a passer dans le trou de ver, nous voyons l'ensemble des planètes
         //if (exoplaneteChoisie)  ...
-
+        
     }
     
     void afficherExosoleil() {
