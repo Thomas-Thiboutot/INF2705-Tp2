@@ -195,9 +195,9 @@ public:
     void positionnerCamera(int exoplaneteChoisie)
     {
         // partie 2: modifs ici ...
-        //Exoplanete *exoplanete = exoplanetes[exoplaneteChoisie-1];
-        //MatricePipeline mtc = ...
-        //matrVisu.setMatr( ... );
+        Exoplanete *exoplanete = exoplanetes[exoplaneteChoisie-1];
+        MatricePipeline mtc = exoplanete->obtenirMatriceCourante();
+        matrVisu.setMatr( glm::inverse( glm::mat4(mtc) ) );
     }
 
     void afficherToutesLesExoplanetes()
@@ -280,7 +280,7 @@ public:
         glUniform1i(locillumination, Etat::illumination);
         glUniform1i(locmonochromacite, Etat::monochromacite);
 
-        glStencilOp( GL_KEEP, GL_REPLACE, GL_REPLACE);
+        //glStencilOp( GL_KEEP, GL_REPLACE, GL_REPLACE);
 
         // partie 1: modifs ici ...
         // [ au besoin, utiliser : if ( Etat::debug ) glStencilFunc( GL_ALWAYS, 1, 1 ); // pour débogguer ]
