@@ -43,19 +43,53 @@ uniform int monochromacite; // on appliquer la monochromacite ?
 const bool utiliseBlinn = true;
 
 in Attribs {
+    vec3 lumiDir;
+    vec3 normale, obsVec;
     vec4 couleur;
 } AttribsIn;
 
-out vec4 FragColor;
+float attenuation = 0.75;
 
-void main( void )
+vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
 {
+    vec4 coul = vec4(0);
+
+    // calculer la composante ambiante pour la source de lumière
+    coul += FrontMaterial.ambient * LightSource.ambient;
+
+    // calculer l'éclairage seulement si le produit scalaire est positif
+    float NdotL = max( 0.0, dot( N, L ) );
+    if ( NdotL > 0.0 )
+    {
+        // calculer la composante diffuse
+        coul += attenuation * FrontMaterial.diffuse * LightSource.diffuse * NdotL;
+
+        // calculer la composante spéculaire (Blinn ou Phong : spec = BdotN ou RdotO )
+        float spec = ( utiliseBlinn ?
+                       dot( normalize( L + O ), N ) : // dot( B, N )
+                       dot( reflect( -L, N ), O ) ); // dot( R, O )
+        if ( spec > 0 ) coul += attenuation * FrontMaterial.specular * LightSource.specular * pow( spec, FrontMaterial.shininess );
+    }
+
+    return( coul );
+}
+
+
+out vec4 FragColor;
+uniform bool afficheNormales = true;
+void main( void )
+{   
     // la couleur du fragment est la couleur interpolée
     FragColor = AttribsIn.couleur;
 
-    // Mettre un test bidon afin que l'optimisation du compilateur n'élimine les variable "illumination"
-    // et "monochromacite".
+    vec3 L = normalize( AttribsIn.lumiDir ); // vecteur vers la source lumineuse
+    vec3 N = normalize( gl_FrontFacing ? AttribsIn.normale : -AttribsIn.normale );
+    vec3 O = normalize( AttribsIn.obsVec ); 
+
+    vec4 coul = FrontMaterial.emission + FrontMaterial.ambient * LightModel.ambient;
+    //coul += calculerReflexion( L, N, O );
     // Vous ENLEVEREZ ce test inutile!
+    if ( afficheNormales ) FragColor = clamp( vec4( (N+1)/2, 1 ), 0.0, 1.0 );
     if ( illumination > 10000 ) FragColor.r += 0.001;
     if ( monochromacite > 10000 ) FragColor.r += 0.001;
 }

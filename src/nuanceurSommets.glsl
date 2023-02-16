@@ -18,4 +18,5 @@ void main( void )
 
     // couleur du sommet
     AttribsOut.couleur = Color;
+    
 }
