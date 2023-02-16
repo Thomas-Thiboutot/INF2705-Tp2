@@ -297,6 +297,7 @@ public:
         afficherParois();
         // lorsqu'on a passer dans le trou de ver, nous voyons l'ensemble des planètes
         //if (exoplaneteChoisie)  ...
+        glDisable(GL_STENCIL_TEST);
         
     }
     
