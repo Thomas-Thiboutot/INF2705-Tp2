@@ -40,7 +40,7 @@ layout (std140) uniform LightModelParameters
 uniform int illumination; // on veut calculer l'illumination ?
 uniform int monochromacite; // on appliquer la monochromacite ?
 
-const bool utiliseBlinn = true;
+const bool utiliseBlinn = false;
 
 in Attribs {
     vec3 lumiDir;
@@ -48,14 +48,12 @@ in Attribs {
     vec4 couleur;
 } AttribsIn;
 
-float attenuation = 0.75;
+float attenuation = 0.7;
 
-vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
+vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O, in vec4 coul )
 {
-    vec4 coul = vec4(0);
-
     // calculer la composante ambiante pour la source de lumière
-    coul += FrontMaterial.ambient * LightSource.ambient;
+    //coul += FrontMaterial.ambient * LightSource.ambient;
 
     // calculer l'éclairage seulement si le produit scalaire est positif
     float NdotL = max( 0.0, dot( N, L ) );
@@ -63,20 +61,18 @@ vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
     {
         // calculer la composante diffuse
         coul += attenuation * FrontMaterial.diffuse * LightSource.diffuse * NdotL;
-
         // calculer la composante spéculaire (Blinn ou Phong : spec = BdotN ou RdotO )
-        float spec = ( utiliseBlinn ?
-                       dot( normalize( L + O ), N ) : // dot( B, N )
-                       dot( reflect( -L, N ), O ) ); // dot( R, O )
+        float spec = dot( reflect( -L, N ), O ); // dot( R, O )
         if ( spec > 0 ) coul += attenuation * FrontMaterial.specular * LightSource.specular * pow( spec, FrontMaterial.shininess );
     }
 
     return( coul );
+
 }
 
 
 out vec4 FragColor;
-uniform bool afficheNormales = true;
+uniform bool afficheNormales = false;
 void main( void )
 {   
     // la couleur du fragment est la couleur interpolée
@@ -84,11 +80,12 @@ void main( void )
 
     vec3 L = normalize( AttribsIn.lumiDir ); // vecteur vers la source lumineuse
     vec3 N = normalize( gl_FrontFacing ? AttribsIn.normale : -AttribsIn.normale );
-    vec3 O = normalize( AttribsIn.obsVec ); 
+    vec3 O = normalize( AttribsIn.obsVec );
 
     vec4 coul = FrontMaterial.emission + FrontMaterial.ambient * LightModel.ambient;
-    //coul += calculerReflexion( L, N, O );
+    coul += calculerReflexion( L, N, O, FragColor );
     // Vous ENLEVEREZ ce test inutile!
+    FragColor = clamp( coul, 0.0, 1.0);
     if ( afficheNormales ) FragColor = clamp( vec4( (N+1)/2, 1 ), 0.0, 1.0 );
     if ( illumination > 10000 ) FragColor.r += 0.001;
     if ( monochromacite > 10000 ) FragColor.r += 0.001;

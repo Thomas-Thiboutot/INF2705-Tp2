@@ -27,22 +27,21 @@ out Attribs {
     vec4 couleur;
     } AttribsOut;
 
-vec3 GetNormal()
-{
-   vec3 a = vec3(gl_in[1].gl_Position) - vec3(gl_in[0].gl_Position);
-   vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[0].gl_Position);
-   return cross(a, b);
-}  
-
 void main()
-{ 
+{    
     for ( int i = 0 ; i < gl_in.length() ; ++i )
     {   
-        AttribsOut.normale = GetNormal();
+        gl_Position = gl_in[i].gl_Position;
+
+        vec3 a = vec3(gl_in[1].gl_Position) - vec3(gl_in[0].gl_Position);
+        vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[0].gl_Position);
+        AttribsOut.normale = normalize(cross(a,b));
+
         AttribsOut.lumiDir = vec3( 0, 0, 1 );
         AttribsOut.obsVec = vec3( 0, 0, 1 );
-        gl_Position = gl_in[i].gl_Position;
+
         AttribsOut.couleur = AttribsIn[i].couleur;
+
         EmitVertex();
     }
     EndPrimitive();
