@@ -285,7 +285,7 @@ public:
         // partie 1: modifs ici ...
         // [ au besoin, utiliser : if ( Etat::debug ) glStencilFunc( GL_ALWAYS, 1, 1 ); // pour débogguer ]
         // on trace le contenu de chaque lentille 5 fois
-        //glStencilFunc(GL_EQUAL, 1, 1);
+        glStencilFunc(GL_GEQUAL, 1, 1);
        
         // ...
         //glStencilFunc( GLenum func, GLint ref, GLuint mask );
@@ -297,7 +297,6 @@ public:
         afficherParois();
         // lorsqu'on a passer dans le trou de ver, nous voyons l'ensemble des planètes
         //if (exoplaneteChoisie)  ...
-        glDisable(GL_STENCIL_TEST);
         
     }
     

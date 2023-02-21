@@ -48,7 +48,7 @@ in Attribs {
     vec4 couleur;
 } AttribsIn;
 
-float attenuation = 0.7;
+float attenuation = 0.5;
 
 vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O, in vec4 coul )
 {
@@ -87,6 +87,10 @@ void main( void )
     // Vous ENLEVEREZ ce test inutile!
     FragColor = clamp( coul, 0.0, 1.0);
     if ( afficheNormales ) FragColor = clamp( vec4( (N+1)/2, 1 ), 0.0, 1.0 );
-    if ( illumination > 10000 ) FragColor.r += 0.001;
-    if ( monochromacite > 10000 ) FragColor.r += 0.001;
+
+    if ( monochromacite == 1 ) {
+        FragColor.r = 0.229 * FragColor.r + 0.587 * FragColor.g + 0.114 * FragColor.b;
+        FragColor.g = 0.229 * FragColor.r + 0.587 * FragColor.g + 0.114 * FragColor.b;
+        FragColor.b = 0.229 * FragColor.r + 0.587 * FragColor.g + 0.114 * FragColor.b;
+    } 
 }
